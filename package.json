@@ -2,6 +2,7 @@
   "name": "react",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://shivammalhare.github.io/Vidly-Movies-Application/",
   "dependencies": {
     "bootstrap": "^4.3.1",
     "font-awesome": "4.7.0",
@@ -14,9 +15,12 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "devDependencies": {
+    "gh-pages": "^4.0.0",
     "react-scripts": "^5.0.1"
   },
   "browserslist": {
@@ -32,3 +36,4 @@
     ]
   }
 }
+
