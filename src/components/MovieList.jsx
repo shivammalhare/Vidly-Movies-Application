@@ -2,12 +2,17 @@ import React, { Component, Fragment } from 'react';
 import { render } from 'react-dom';
 import { getMovies, getMovie, saveMovie, deleteMovie } from '../fakeMovieService';
 import Like from './common/like';
+import Pagination from './common/pagination';
+import { paginate } from '../utils/paginate';
 
 class MovieList extends Component {
 
   state={
-    movies: getMovies()
+    movies: getMovies(),
+    pageSize : 4,           
+    currentPage:1 //current page is 1 because we start from page 1
   };
+
   render() {
         return <div>
           {
@@ -23,6 +28,10 @@ class MovieList extends Component {
     const movies = this.state.movies.filter(m=> m._id !== movie._id); // filter out the movie that is being deleted
     this.setState({movies});
   }
+
+  handlePageChange = (page) =>{
+    this.setState({currentPage: page});
+  };
 
   handleLike =(movie)=>{
     const movies = [...this.state.movies];
@@ -41,7 +50,14 @@ class MovieList extends Component {
   //     }
 
   renderMovies = () =>{
-    const { movies } = this.state;
+   
+    const count =this.state.movies.length;
+    const { pageSize, currentPage ,movies:allmovies} = this.state;
+
+    const movies = paginate(allmovies, currentPage, pageSize);
+    
+
+
     return ( 
       <Fragment>
         <p> Showing {movies.length} movies in the database</p>
@@ -61,7 +77,7 @@ class MovieList extends Component {
         <tbody>
 
          
-          {this.state.movies.map(movie => (
+          {movies.map(movie => (
           <tr key={movie._id}>  
             <td>{movie.title}</td>
             <td>{movie.genre.name}</td>
@@ -75,6 +91,10 @@ class MovieList extends Component {
               
         </tbody>
       </table>
+      <Pagination  itemsCount={count} 
+      pageSize={pageSize}
+      currentPage ={currentPage}
+       onPageChange ={this.handlePageChange}/>
       </div>
       </Fragment>
 
