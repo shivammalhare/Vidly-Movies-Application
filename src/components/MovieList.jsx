@@ -4,15 +4,22 @@ import { getMovies, getMovie, saveMovie, deleteMovie } from '../fakeMovieService
 import Like from './common/like';
 import Pagination from './common/pagination';
 import { paginate } from '../utils/paginate';
+import ListGroup from './common/listGroup';
+import { getGenres } from '../fakeGenreService';
 
 class MovieList extends Component {
 
   state={
     movies: getMovies(),
+    genres:[],
     pageSize : 4,           
     currentPage:1 //current page is 1 because we start from page 1
+
   };
 
+  componentDidMount() {
+    this.setState({genres: getGenres()});
+  }
   render() {
         return <div>
           {
@@ -33,6 +40,11 @@ class MovieList extends Component {
     this.setState({currentPage: page});
   };
 
+  handleGenreSelect = (genre) => {
+    this.setState({selectedGenre: genre, currentPage: 1});
+  };
+
+
   handleLike =(movie)=>{
     const movies = [...this.state.movies];
     const index = movies.indexOf(movie);
@@ -52,15 +64,30 @@ class MovieList extends Component {
   renderMovies = () =>{
    
     const count =this.state.movies.length;
-    const { pageSize, currentPage ,movies:allmovies} = this.state;
+    const { pageSize, currentPage,selectedGenre ,movies:allmovies} = this.state;
 
-    const movies = paginate(allmovies, currentPage, pageSize);
+    const filtered = selectedGenre 
+    ? allmovies.filter(m=> m.genre._id === selectedGenre._id) 
+    : allmovies;
+
+
+    const movies = paginate(filtered, currentPage, pageSize);
     
 
 
     return ( 
-      <Fragment>
-        <p> Showing {movies.length} movies in the database</p>
+      <div className='row' style={{marginTop: 25}}>
+        <div className='col-3'>
+        <ListGroup items={this.state.genres}  
+       selectedItem={this.state.selectedGenre}
+        onItemSelect ={this.handleGenreSelect}
+        />
+        </div>
+          <div className="col">
+
+            
+        
+        <h2> Showing {filtered.length} movies in the database</h2>
       <div className="">
         
       <table className="table">
@@ -70,7 +97,7 @@ class MovieList extends Component {
             <th>Genre</th>
             <th>Stock</th>
             <th>Rate</th>
-            <th></th>
+            <th>Like</th>
             <th></th>
           </tr>
         </thead>
@@ -78,7 +105,7 @@ class MovieList extends Component {
 
          
           {movies.map(movie => (
-          <tr key={movie._id}>  
+            <tr key={movie._id}>  
             <td>{movie.title}</td>
             <td>{movie.genre.name}</td>
             <td>{movie.numberInStock}</td>
@@ -87,19 +114,20 @@ class MovieList extends Component {
             <td><button onClick={() => this.handleDelete(movie)} className="btn btn-danger btn-sm"> Delete</button></td>
        </tr>
     
-     ))}
+    ))}
               
         </tbody>
       </table>
-      <Pagination  itemsCount={count} 
+      <Pagination  itemsCount={filtered.length} 
       pageSize={pageSize}
       currentPage ={currentPage}
-       onPageChange ={this.handlePageChange}/>
+      onPageChange ={this.handlePageChange}/>
       </div>
-      </Fragment>
+      </div>
 
 
-    )
+      </div>
+    );
   }
 }
 

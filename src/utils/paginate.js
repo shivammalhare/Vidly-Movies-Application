@@ -8,5 +8,5 @@ export function paginate(items,pageNumber,pageSize) {
   .take(pageSize)
   .value();
 
-  cons
+ 
 }
